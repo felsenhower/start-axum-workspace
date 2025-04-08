@@ -65,10 +65,9 @@ Will generate your server binary in target/server/release and your site package 
 
 ## Testing Your Project
 
-Cargo-leptos uses (https://playwright.dev)[Playwright] as the end-to-end test tool. 
-
-Prior to the first run of the end-to-end tests run Playwright must be installed. 
-In the project's `end2end` directory run `npm install -D playwright @playwright/test` to install playwright and browser specific APIs.
+Instead of [Playwright](https://playwright.dev) this template uses
+[Rust Headless Chrome](https://github.com/rust-headless-chrome/rust-headless-chrome)
+to perform the end-to-end tests.
 
 To run the tests during development in the project root run:
 ```bash
@@ -79,10 +78,7 @@ To run tests for release in the project root run:
 ```bash
 cargo leptos end-to-end --release
 ```
-There are some examples tests are located in `end2end/tests` directory that pass tests with the sample Leptos app.
-
-A web-based report on tests is available by running `npx playwright show-report` in the `end2end` directory.
-
+There are some examples tests are located in `end2end/src` directory that pass tests with the sample Leptos app.
 
 ## Executing a Server on a Remote Machine Without the Toolchain
 After running a `cargo leptos build --release` the minimum files needed are:
