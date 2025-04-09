@@ -3,23 +3,39 @@ mod tests {
 
     use anyhow::Result;
     use headless_chrome::{Browser, LaunchOptions, Tab};
+    use rstest::*;
     use std::sync::Arc;
 
-    fn init_browser() -> Result<(Browser, Arc<Tab>)> {
+    fn init_browser() -> Result<Browser> {
         let options = LaunchOptions::default_builder()
-            .build()
-            .map_err(|e| anyhow::anyhow!("Couldn't find appropriate Chrome binary: {}", e))?;
+            .headless(true)
+            .sandbox(false)
+            .build()?;
         let browser = Browser::new(options)?;
+        Ok(browser)
+    }
+    
+    fn init_tab(browser: &Browser) -> Result<Arc<Tab>> {
         let tab = browser.new_tab()?;
         tab.set_default_timeout(std::time::Duration::from_secs(5));
         tab.navigate_to("http://127.0.0.1:3000")?;
         tab.wait_until_navigated()?;
-        Ok((browser, tab))
+        Ok(tab)
     }
 
-    #[test]
-    fn test_page_title_is_correct() -> Result<()> {
-        let (_browser, tab) = init_browser()?;
+    #[fixture]
+    #[once]
+    fn browser() -> Browser {
+        init_browser().expect("Unable to create browser")
+    }
+
+    #[fixture]
+    fn tab(browser: &Browser) -> Arc<Tab> {
+        init_tab(browser).expect("Unable to create tab")
+    }
+
+    #[rstest]
+    fn test_page_title_is_correct(tab: Arc<Tab>) -> Result<()> {
         assert_eq!(tab.get_title()?, "Welcome to Leptos");
         assert_eq!(
             tab.find_element("h1")?.get_inner_text()?,
@@ -28,9 +44,8 @@ mod tests {
         Ok(())
     }
 
-    #[test]
-    fn test_button_click_updates_text() -> Result<()> {
-        let (_browser, tab) = init_browser()?;
+    #[rstest]
+    fn test_button_click_updates_text(tab: Arc<Tab>) -> Result<()> {
         let button = tab.find_element("button")?;
         assert_eq!(button.get_inner_text()?, "Click Me: 0");
         button.click()?;
