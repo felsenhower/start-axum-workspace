@@ -33,10 +33,10 @@ wasm-bindgen = "=0.2.100"
 # that are used together frontend (lib) & server (bin)
 [[workspace.metadata.leptos]]
 # this name is used for the wasm, js and css file names
-name = "start-axum-workspace"
+name = "{{project-name}}"
 
-# [Optional] Should be the same as name above. If this is missing, the end-to-end tests might stop working.
-output-name = "start-axum-workspace"
+# The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name
+output-name = "{{project-name}}"
 
 # the package in the workspace that contains the server binary (binary crate)
 bin-package = "server"
