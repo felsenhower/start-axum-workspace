@@ -3,9 +3,9 @@ mod tests {
 
     use anyhow::Result;
     use headless_chrome::{Browser, LaunchOptions, Tab};
+    use leptos::prelude::*;
     use rstest::*;
     use std::sync::Arc;
-    use leptos::prelude::*;
 
     fn init_browser() -> Result<Browser> {
         let options = LaunchOptions::default_builder()
@@ -15,7 +15,7 @@ mod tests {
         let browser = Browser::new(options)?;
         Ok(browser)
     }
-    
+
     fn init_tab(browser: &Browser, site_url: &str) -> Result<Arc<Tab>> {
         let tab = browser.new_tab()?;
         tab.set_default_timeout(std::time::Duration::from_secs(5));
