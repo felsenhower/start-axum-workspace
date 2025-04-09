@@ -5,6 +5,7 @@ mod tests {
     use headless_chrome::{Browser, LaunchOptions, Tab};
     use rstest::*;
     use std::sync::Arc;
+    use leptos::prelude::*;
 
     fn init_browser() -> Result<Browser> {
         let options = LaunchOptions::default_builder()
@@ -15,10 +16,10 @@ mod tests {
         Ok(browser)
     }
     
-    fn init_tab(browser: &Browser) -> Result<Arc<Tab>> {
+    fn init_tab(browser: &Browser, site_url: &str) -> Result<Arc<Tab>> {
         let tab = browser.new_tab()?;
         tab.set_default_timeout(std::time::Duration::from_secs(5));
-        tab.navigate_to("http://127.0.0.1:3000")?;
+        tab.navigate_to(site_url)?;
         tab.wait_until_navigated()?;
         Ok(tab)
     }
@@ -30,8 +31,16 @@ mod tests {
     }
 
     #[fixture]
-    fn tab(browser: &Browser) -> Arc<Tab> {
-        init_tab(browser).expect("Unable to create tab")
+    #[once]
+    fn site_url() -> String {
+        let conf = get_configuration(Some("../Cargo.toml")).unwrap();
+        let addr = conf.leptos_options.site_addr;
+        format!("http://{}", addr)
+    }
+
+    #[fixture]
+    fn tab(browser: &Browser, site_url: &str) -> Arc<Tab> {
+        init_tab(browser, site_url).expect("Unable to create tab")
     }
 
     #[rstest]
